@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Jeu de Reconnaissance d'Intervalles</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        #game-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #interval-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        #feedback {
+            font-size: 1.5em;
+            margin: 20px 0;
+            text-align: center;
+            color: #e74c3c;
+        }
+        #score {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .feedback-symbol {
+            font-size: 4em;
+            margin: 20px;
+            display: none;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #2ecc71;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .speed-control {
+            margin: 20px 0;
+        }
+        #final-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Jeu de Reconnaissance d'Intervalles Musicaux 🎵</h1>
+    <button id="return-to-index">Retour à l'accueil</button>
+    <div id="game-container">
+        <div class="speed-control">
+            <label for="speed">Vitesse : </label>
+            <input id="speed" max="1000" min="100" step="100" type="range" value="500"/>
+        </div>
+        <button id="play-interval">Jouer un intervalle</button>
+        <div id="interval-options"></div>
+        <div id="feedback"></div>
+        <div class="feedback-symbol" id="feedback-symbol"></div>
+        <div id="score">Score: <span id="score-value">0</span>/20</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+    <div id="final-score"></div>
+    <div id="end-game-options"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const intervalsParam = urlParams.get('intervals');
+
+        // Utiliser les intervalles de l'URL ou un ensemble par défaut
+        let selectedIntervals = intervalsParam ? intervalsParam.split(',') : ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'];
+
+        console.log('Selected intervals:', selectedIntervals);
+
+        // Utiliser un synthétiseur simple
+        const synth = new Tone.Synth().toDestination();
+        synth.volume.value = -10; // Réglez le volume à un niveau constant
+
+        const playIntervalButton = document.getElementById('play-interval');
+        const progressBar = document.getElementById('progress-bar');
+        const speedControl = document.getElementById('speed');
+        const feedbackSymbol = document.getElementById('feedback-symbol');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const endGameOptions = document.getElementById('end-game-options');
+        const returnToIndexButton = document.getElementById('return-to-index');
+
+        returnToIndexButton.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        const intervalTypes = {
+            m2: 1, M2: 2, m3: 3, M3: 4, P4: 5,
+            P5: 7, m6: 8, M6: 9, m7: 10, M7: 11, P8: 12
+        };
+
+        const intervalOrder = ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'];
+
+        const funnyComments = {
+            correct: [
+                "Bravo ! Tu as l'oreille absolue ou juste de la chance ? 🎉",
+                "Génial ! Mozart serait fier de toi. 🎼",
+                "Impressionnant ! Encore une bonne réponse. 👏",
+                "Super ! Tu es en feu aujourd'hui. 🔥",
+                "Parfait ! Continue comme ça. 👍"
+            ],
+            incorrect: [
+                "Presque ! Essaie encore. 😕",
+                "Pas tout à fait, mais ne baisse pas les bras ! 💪",
+                "Raté ! Mais ne t'inquiète pas, même Beethoven a dû s'entraîner. 🎻",
+                "Faux, mais tu vas y arriver ! 😊",
+                "Pas cette fois-ci, mais continue à essayer ! 👍"
+            ]
+        };
+
+        let score = 0;
+        let intervalsPlayed = 0;
+        const maxIntervals = 20;
+        let lastInterval = null;
+
+        function getRandomNote() {
+            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const noteIndex = Math.floor(Math.random() * notes.length);
+            const octave = Math.floor(Math.random() * 3) + 3;
+            return notes[noteIndex] + octave;
+        }
+
+        function getIntervalNotes(interval) {
+            const startNote = lastInterval ? lastInterval[0] : getRandomNote();
+            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const startIndex = notes.indexOf(startNote.substring(0, startNote.length - 1));
+            const octave = parseInt(startNote.substring(startNote.length - 1));
+
+            let endNote;
+            const semitones = intervalTypes[interval];
+            const endIndex = (startIndex + semitones) % notes.length;
+            endNote = notes[endIndex] + (octave + Math.floor((startIndex + semitones) / notes.length));
+
+            return [startNote, endNote];
+        }
+
+        playIntervalButton.addEventListener('click', () => {
+            if (intervalsPlayed >= maxIntervals) {
+                endGame();
+                return;
+            }
+
+            playIntervalButton.disabled = true; // Désactiver le bouton pendant la lecture
+
+            const randomInterval = lastInterval ? lastInterval[2] : selectedIntervals[Math.floor(Math.random() * selectedIntervals.length)];
+            const [note1, note2] = getIntervalNotes(randomInterval);
+
+            playInterval(note1, note2);
+            document.getElementById('feedback').textContent = `Quel intervalle est-ce ?`;
+
+            const optionsContainer = document.getElementById('interval-options');
+            optionsContainer.innerHTML = '';
+            selectedIntervals.forEach(interval => {
+                const button = document.createElement('button');
+                button.textContent = getIntervalName(interval);
+                button.addEventListener('click', () => {
+                    checkAnswer(interval, randomInterval);
+                    disableAnswerButtons(optionsContainer);
+                    lastInterval = null;
+                });
+                optionsContainer.appendChild(button);
+            });
+
+            if (!lastInterval) {
+                intervalsPlayed++;
+                updateProgressBar();
+            }
+
+            lastInterval = [note1, note2, randomInterval];
+        });
+
+        function updateProgressBar() {
+            const progressPercentage = (intervalsPlayed / maxIntervals) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function disableAnswerButtons(container) {
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function playInterval(note1, note2) {
+            const delay = 1100 - parseInt(speedControl.value);
+            synth.triggerAttackRelease(note1, "8n");
+            setTimeout(() => {
+                synth.triggerAttackRelease(note2, "8n");
+                playIntervalButton.disabled = false; // Réactiver le bouton après la lecture
+            }, delay);
+        }
+
+        function getIntervalName(interval) {
+            const intervalNames = {
+                m2: "Seconde mineure",
+                M2: "Seconde majeure",
+                m3: "Tierce mineure",
+                M3: "Tierce majeure",
+                P4: "Quarte juste",
+                P5: "Quinte juste",
+                m6: "Sixte mineure",
+                M6: "Sixte majeure",
+                m7: "Septième mineure",
+                M7: "Septième majeure",
+                P8: "Octave juste"
+            };
+            return intervalNames[interval];
+        }
+
+        function getRandomComment(type) {
+            const comments = funnyComments[type];
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function checkAnswer(selectedInterval, correctInterval) {
+            if (selectedInterval === correctInterval) {
+                document.getElementById('feedback').textContent = `${getRandomComment('correct')} C'était bien une ${getIntervalName(correctInterval)}.`;
+                feedbackSymbol.textContent = '✓';
+                feedbackSymbol.className = 'feedback-symbol correct';
+                score++;
+            } else {
+                document.getElementById('feedback').textContent = `${getRandomComment('incorrect')} C'était une ${getIntervalName(correctInterval)}.`;
+                feedbackSymbol.textContent = '✗';
+                feedbackSymbol.className = 'feedback-symbol incorrect';
+            }
+            feedbackSymbol.style.display = 'block';
+            setTimeout(() => {
+                feedbackSymbol.style.display = 'none';
+                if (intervalsPlayed < maxIntervals) {
+                    playIntervalButton.click();
+                } else {
+                    endGame();
+                }
+            }, 1000);
+            document.getElementById('score-value').textContent = score;
+        }
+
+        function endGame() {
+            finalScoreDisplay.textContent = `Score Final: ${score}/${maxIntervals}`;
+            playIntervalButton.style.display = 'none';
+            document.getElementById('interval-options').style.display = 'none';
+            document.getElementById('feedback').style.display = 'none';
+            feedbackSymbol.style.display = 'none';
+            document.getElementById('score').style.display = 'none';
+            document.getElementById('progress-bar').style.display = 'none';
+
+            endGameOptions.innerHTML = '';
+
+            if (score < 17) {
+                const retryButton = document.createElement('button');
+                retryButton.textContent = "Réessayer";
+                retryButton.addEventListener('click', () => {
+                    window.location.reload();
+                });
+                endGameOptions.appendChild(retryButton);
+            } else {
+                if (selectedIntervals.length < intervalOrder.length) {
+                    const nextIntervalIndex = intervalOrder.findIndex(interval => !selectedIntervals.includes(interval));
+                    const nextInterval = intervalOrder[nextIntervalIndex];
+
+                    const replayButton = document.createElement('button');
+                    replayButton.textContent = "Rejouer";
+                    replayButton.addEventListener('click', () => {
+                        window.location.reload();
+                    });
+
+                    const addIntervalButton = document.createElement('button');
+                    addIntervalButton.textContent = "Ajouter un intervalle";
+                    addIntervalButton.addEventListener('click', () => {
+                        selectedIntervals.push(nextInterval);
+                        selectedIntervals.sort((a, b) => intervalOrder.indexOf(a) - intervalOrder.indexOf(b));
+                        window.location.href = `jeu.html?intervals=${selectedIntervals.join(',')}`;
+                    });
+
+                    endGameOptions.appendChild(replayButton);
+                    endGameOptions.appendChild(addIntervalButton);
+                } else {
+                    const adventureButton = document.createElement('button');
+                    adventureButton.textContent = "Mode Aventure";
+                    adventureButton.addEventListener('click', () => {
+                        window.location.href = 'aventure.html';
+                    });
+                    endGameOptions.appendChild(adventureButton);
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
