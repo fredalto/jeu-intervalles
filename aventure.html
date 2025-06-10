@@ -129,22 +129,22 @@
 <!-- Les barres de niveau seront ajoutées ici dynamiquement -->
 </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
 <script>
-function playSound(note) {
-    const notesAudio = {
-        'F3': '/assets/sounds/F3.mp3',
-        'F#3': '/assets/sounds/Fsharp3.mp3',
-        'G3': '/assets/sounds/G3.mp3'
-        // Ajoutez d'autres notes au besoin
-    };
+function playInterval(note1, note2) {
+    const delay = 1100 - parseInt(speedControl.value);
+    const audio1 = new Audio(`Notes/${note1}.wav`);
+    const audio2 = new Audio(`Notes/${note2}.wav`);
 
-    // Vérifiez si la note existe dans l'objet notesAudio
-    if (notesAudio[note]) {
-        const audio = new Audio(notesAudio[note]);
-        audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
-    } else {
-        console.error("La note spécifiée n'existe pas:", note);
-    }
+    playIntervalButton.disabled = true;
+    audio1.play();
+
+    setTimeout(() => {
+        audio2.play();
+        setTimeout(() => {
+            playIntervalButton.disabled = false;
+        }, delay);
+    }, delay);
 }
 </script>
 </body>
