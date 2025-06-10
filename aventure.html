@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Mode Aventure</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mode Aventure</title>
+<style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
@@ -111,22 +112,22 @@
 </head>
 <body>
 <div class="container">
-    <h1>Mode Aventure 🎵</h1>
-    <button id="return-to-index">Retour à l'accueil</button>
-    <div id="game-container">
-        <div class="speed-control">
-            <label for="speed">Vitesse : </label>
-            <input id="speed" max="1000" min="100" step="100" type="range" value="500"/>
-        </div>
-        <button id="play-interval">Jouer l'intervalle</button>
-        <div id="interval-options"></div>
-        <div id="feedback"></div>
-        <div class="feedback-symbol" id="feedback-symbol"></div>
-        <div id="score">Score: <span id="score-value">0</span>/10</div>
-    </div>
-    <div class="level-bars-container" id="level-bars-container">
-        <!-- Les barres de niveau seront ajoutées ici dynamiquement -->
-    </div>
+<h1>Mode Aventure 🎵</h1>
+<button id="return-to-index">Retour à l'accueil</button>
+<div id="game-container">
+<div class="speed-control">
+<label for="speed">Vitesse : </label>
+<input id="speed" max="1000" min="100" step="100" type="range" value="500"/>
+</div>
+<button id="play-interval">Jouer l'intervalle</button>
+<div id="interval-options"></div>
+<div id="feedback"></div>
+<div class="feedback-symbol" id="feedback-symbol"></div>
+<div id="score">Score: <span id="score-value">0</span>/10</div>
+</div>
+<div class="level-bars-container" id="level-bars-container">
+<!-- Les barres de niveau seront ajoutées ici dynamiquement -->
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
 <script>
@@ -273,7 +274,7 @@
                 intervalsPlayed++;
             }
 
-            lastInterval = [note1, note2, randomInterval];
+            lastInterval = null; // Reset the last interval when changing levels
         });
 
         function disableAnswerButtons(container) {
