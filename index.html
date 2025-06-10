@@ -8,8 +8,9 @@
 </head>
 <body>
     <button onclick="playNote('F3')">Jouer F3</button>
-    <button onclick="playNote('F#3')">Jouer F#3</button>
+    <button onclick="playNote('Fsharp3')">Jouer F#3</button>
     <button onclick="playNote('G3')">Jouer G3</button>
+    <button onclick="playNote('Asharp3')">Jouer A#3</button>
     <!-- Ajoutez d'autres boutons pour chaque note -->
 
     <script>
@@ -18,10 +19,20 @@
 
         // Chargez les sons
         function loadSounds() {
-            const notes = ['F3', 'F#3', 'G3' /* ajoutez toutes vos notes ici */];
+            const notes = [
+                { name: 'F3', file: 'F3.mp3' },
+                { name: 'Fsharp3', file: 'Fsharp3.mp3' },
+                { name: 'G3', file: 'G3.mp3' },
+                { name: 'Asharp3', file: 'Asharp3.mp3' }
+                // Ajoutez d'autres notes ici
+            ];
+
             notes.forEach(note => {
-                sounds[note] = new Howl({
-                    src: [`assets/sounds/${note}.mp3`]
+                sounds[note.name] = new Howl({
+                    src: [`assets/sounds/${note.file}`],
+                    onloaderror: function() {
+                        console.error(`Erreur de chargement du son pour la note ${note.name}.`);
+                    }
                 });
             });
         }
