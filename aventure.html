@@ -131,21 +131,190 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
 <script>
-function playInterval(note1, note2) {
-    const delay = 1100 - parseInt(speedControl.value);
-    const audio1 = new Audio(`Notes/${note1}.wav`);
-    const audio2 = new Audio(`Notes/${note2}.wav`);
+    document.addEventListener('DOMContentLoaded', function() {
+        const synth = new Tone.Synth().toDestination();
+        synth.volume.value = -10;
 
-    playIntervalButton.disabled = true;
-    audio1.play();
+        const playIntervalButton = document.getElementById('play-interval');
+        const speedControl = document.getElementById('speed');
+        const feedbackSymbol = document.getElementById('feedback-symbol');
+        const returnToIndexButton = document.getElementById('return-to-index');
+        const levelBarsContainer = document.getElementById('level-bars-container');
 
-    setTimeout(() => {
-        audio2.play();
-        setTimeout(() => {
-            playIntervalButton.disabled = false;
-        }, delay);
-    }, delay);
-}
+        returnToIndexButton.addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        // Définir les niveaux avec leurs intervalles
+        const levels = [
+            { intervals: ['m2', 'M2'] },
+            { intervals: ['m2', 'M2', 'm3'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7', 'M7'] },
+            { intervals: ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'] }
+        ];
+
+        // Ajouter les barres de niveau dynamiquement
+        levels.forEach((level, index) => {
+            const hue = 120 - (index * 12); // Couleur allant du vert au rouge
+            const levelBarContainer = document.createElement('div');
+            levelBarContainer.className = 'level-bar-container';
+            levelBarContainer.innerHTML = `
+                <div class="level-bar" id="level-bar-${index}" style="background-color: hsl(${hue}, 100%, 50%); height: 0%;"></div>
+                <div class="level-label">Niveau ${index + 1}</div>
+            `;
+            levelBarsContainer.appendChild(levelBarContainer);
+        });
+
+        let currentLevel = 0;
+        let score = 0;
+        let intervalsPlayed = 0;
+        const maxIntervalsPerLevel = 10;
+        let lastInterval = null;
+
+        function getRandomNote() {
+            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const noteIndex = Math.floor(Math.random() * notes.length);
+            const octave = Math.floor(Math.random() * 3) + 3;
+            return notes[noteIndex] + octave;
+        }
+
+        function getIntervalNotes(interval) {
+            const startNote = lastInterval ? lastInterval[0] : getRandomNote();
+            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const startIndex = notes.indexOf(startNote.substring(0, startNote.length - 1));
+            const octave = parseInt(startNote.substring(startNote.length - 1));
+
+            let endNote;
+            const semitones = getSemitonesForInterval(interval);
+            const endIndex = (startIndex + semitones) % notes.length;
+            endNote = notes[endIndex] + (octave + Math.floor((startIndex + semitones) / notes.length));
+
+            return [startNote, endNote];
+        }
+
+        function getSemitonesForInterval(interval) {
+            const intervalTypes = {
+                m2: 1, M2: 2, m3: 3, M3: 4, P4: 5,
+                P5: 7, m6: 8, M6: 9, m7: 10, M7: 11, P8: 12
+            };
+            return intervalTypes[interval];
+        }
+
+        function getIntervalName(interval) {
+            const intervalNames = {
+                m2: "Seconde mineure",
+                M2: "Seconde majeure",
+                m3: "Tierce mineure",
+                M3: "Tierce majeure",
+                P4: "Quarte juste",
+                P5: "Quinte juste",
+                m6: "Sixte mineure",
+                M6: "Sixte majeure",
+                m7: "Septième mineure",
+                M7: "Septième majeure",
+                P8: "Octave juste"
+            };
+            return intervalNames[interval];
+        }
+
+        function updateLevelBar(correct) {
+            const levelBar = document.getElementById(`level-bar-${currentLevel}`);
+            const increment = 100 / maxIntervalsPerLevel;
+            let currentHeight = parseFloat(levelBar.style.height) || 0;
+            currentHeight += correct ? increment : -increment;
+            levelBar.style.height = Math.max(0, currentHeight) + '%';
+
+            if (intervalsPlayed >= maxIntervalsPerLevel) {
+                if (currentLevel < levels.length - 1) {
+                    currentLevel++;
+                    intervalsPlayed = 0;
+                    score = 0;
+                    document.getElementById('score-value').textContent = score;
+                    alert(`Félicitations ! Vous passez au niveau ${currentLevel + 1}.`);
+                    playIntervalButton.click();
+                } else {
+                    alert("Félicitations ! Vous avez terminé tous les niveaux.");
+                }
+            }
+        }
+
+        playIntervalButton.addEventListener('click', () => {
+            playIntervalButton.disabled = true;
+
+            const randomInterval = lastInterval ? lastInterval[2] : levels[currentLevel].intervals[Math.floor(Math.random() * levels[currentLevel].intervals.length)];
+            const [note1, note2] = getIntervalNotes(randomInterval);
+
+            playInterval(note1, note2);
+            document.getElementById('feedback').textContent = `Quel intervalle est-ce ?`;
+
+            const optionsContainer = document.getElementById('interval-options');
+            optionsContainer.innerHTML = '';
+            levels[currentLevel].intervals.forEach(interval => {
+                const button = document.createElement('button');
+                button.textContent = getIntervalName(interval);
+                button.addEventListener('click', () => {
+                    const correct = checkAnswer(interval, randomInterval);
+                    disableAnswerButtons(optionsContainer);
+                    updateLevelBar(correct);
+                    lastInterval = null;
+                    setTimeout(() => {
+                        playIntervalButton.click();
+                    }, 1000);
+                });
+                optionsContainer.appendChild(button);
+            });
+
+            if (!lastInterval) {
+                intervalsPlayed++;
+            }
+
+            lastInterval = null; // Reset the last interval when changing levels
+        });
+
+        function disableAnswerButtons(container) {
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function playInterval(note1, note2) {
+            const delay = 1100 - parseInt(speedControl.value);
+            synth.triggerAttackRelease(note1, "8n");
+            setTimeout(() => {
+                synth.triggerAttackRelease(note2, "8n");
+                setTimeout(() => {
+                    playIntervalButton.disabled = false;
+                }, delay);
+            }, delay);
+        }
+
+        function checkAnswer(selectedInterval, correctInterval) {
+            const correct = selectedInterval === correctInterval;
+            if (correct) {
+                document.getElementById('feedback').textContent = `Correct ! C'était bien une ${getIntervalName(correctInterval)}.`;
+                feedbackSymbol.textContent = '✓';
+                feedbackSymbol.className = 'feedback-symbol correct';
+                score++;
+            } else {
+                document.getElementById('feedback').textContent = `Incorrect. C'était une ${getIntervalName(correctInterval)}.`;
+                feedbackSymbol.textContent = '✗';
+                feedbackSymbol.className = 'feedback-symbol incorrect';
+            }
+            feedbackSymbol.style.display = 'block';
+            setTimeout(() => {
+                feedbackSymbol.style.display = 'none';
+            }, 1000);
+            document.getElementById('score-value').textContent = score;
+            return correct;
+        }
+    });
 </script>
 </body>
 </html>
