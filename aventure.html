@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Mode Aventure</title>
-<style>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mode Aventure</title>
+    <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
@@ -132,9 +131,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
-        
-
         const playIntervalButton = document.getElementById('play-interval');
         const speedControl = document.getElementById('speed');
         const feedbackSymbol = document.getElementById('feedback-symbol');
@@ -178,22 +174,21 @@
         let lastInterval = null;
 
         function getRandomNote() {
-            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+            const notes = ["F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5"];
             const noteIndex = Math.floor(Math.random() * notes.length);
-            const octave = Math.floor(Math.random() * 3) + 3;
-            return notes[noteIndex] + octave;
+            return notes[noteIndex];
         }
 
         function getIntervalNotes(interval) {
             const startNote = lastInterval ? lastInterval[0] : getRandomNote();
-            const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-            const startIndex = notes.indexOf(startNote.substring(0, startNote.length - 1));
+            const notes = ["F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5"];
+            const startIndex = notes.indexOf(startNote);
             const octave = parseInt(startNote.substring(startNote.length - 1));
 
             let endNote;
             const semitones = getSemitonesForInterval(interval);
             const endIndex = (startIndex + semitones) % notes.length;
-            endNote = notes[endIndex] + (octave + Math.floor((startIndex + semitones) / notes.length));
+            endNote = notes[endIndex];
 
             return [startNote, endNote];
         }
@@ -317,7 +312,6 @@
     });
 </script>
 <script>
-
 function playSound(note) {
     const notesAudio = {
         'F3': 'assets/sounds/F3.mp3',
@@ -354,87 +348,6 @@ function playSound(note) {
     const audio = new Audio(notesAudio[note]);
     audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
 }
-
-</script>
-<script>
-
-function playSound(note) {
-    const notesAudio = {
-        'F3': 'assets/sounds/F3.mp3',
-        'F#3': 'assets/sounds/Fsharp3.mp3',
-        'G3': 'assets/sounds/G3.mp3',
-        'G#3': 'assets/sounds/Gsharp3.mp3',
-        'A3': 'assets/sounds/A3.mp3',
-        'A#3': 'assets/sounds/Asharp3.mp3',
-        'B3': 'assets/sounds/B3.mp3',
-        'C4': 'assets/sounds/C4.mp3',
-        'C#4': 'assets/sounds/Csharp4.mp3',
-        'D4': 'assets/sounds/D4.mp3',
-        'D#4': 'assets/sounds/Dsharp4.mp3',
-        'E4': 'assets/sounds/E4.mp3',
-        'F4': 'assets/sounds/F4.mp3',
-        'F#4': 'assets/sounds/Fsharp4.mp3',
-        'G4': 'assets/sounds/G4.mp3',
-        'G#4': 'assets/sounds/Gsharp4.mp3',
-        'A4': 'assets/sounds/A4.mp3',
-        'A#4': 'assets/sounds/Asharp4.mp3',
-        'B4': 'assets/sounds/B4.mp3',
-        'C5': 'assets/sounds/C5.mp3',
-        'C#5': 'assets/sounds/Csharp5.mp3',
-        'D5': 'assets/sounds/D5.mp3',
-        'D#5': 'assets/sounds/Dsharp5.mp3',
-        'E5': 'assets/sounds/E5.mp3',
-        'F5': 'assets/sounds/F5.mp3',
-        'F#5': 'assets/sounds/Fsharp5.mp3',
-        'G5': 'assets/sounds/G5.mp3',
-        'G#5': 'assets/sounds/Gsharp5.mp3',
-        'A5': 'assets/sounds/A5.mp3'
-    };
-
-    const audio = new Audio(notesAudio[note]);
-    audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
-}
-
-</script>
-<script>
-
-function playSound(note) {
-    const notesAudio = {
-        'F3': 'assets/sounds/F3.mp3',
-        'F#3': 'assets/sounds/Fsharp3.mp3',
-        'G3': 'assets/sounds/G3.mp3',
-        'G#3': 'assets/sounds/Gsharp3.mp3',
-        'A3': 'assets/sounds/A3.mp3',
-        'A#3': 'assets/sounds/Asharp3.mp3',
-        'B3': 'assets/sounds/B3.mp3',
-        'C4': 'assets/sounds/C4.mp3',
-        'C#4': 'assets/sounds/Csharp4.mp3',
-        'D4': 'assets/sounds/D4.mp3',
-        'D#4': 'assets/sounds/Dsharp4.mp3',
-        'E4': 'assets/sounds/E4.mp3',
-        'F4': 'assets/sounds/F4.mp3',
-        'F#4': 'assets/sounds/Fsharp4.mp3',
-        'G4': 'assets/sounds/G4.mp3',
-        'G#4': 'assets/sounds/Gsharp4.mp3',
-        'A4': 'assets/sounds/A4.mp3',
-        'A#4': 'assets/sounds/Asharp4.mp3',
-        'B4': 'assets/sounds/B4.mp3',
-        'C5': 'assets/sounds/C5.mp3',
-        'C#5': 'assets/sounds/Csharp5.mp3',
-        'D5': 'assets/sounds/D5.mp3',
-        'D#5': 'assets/sounds/Dsharp5.mp3',
-        'E5': 'assets/sounds/E5.mp3',
-        'F5': 'assets/sounds/F5.mp3',
-        'F#5': 'assets/sounds/Fsharp5.mp3',
-        'G5': 'assets/sounds/G5.mp3',
-        'G#5': 'assets/sounds/Gsharp5.mp3',
-        'A5': 'assets/sounds/A5.mp3'
-    };
-
-    const audio = new Audio(notesAudio[note]);
-    audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
-}
-
 </script>
 </body>
 </html>
