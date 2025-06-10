@@ -133,7 +133,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        synth.volume.value = -10;
+        
 
         const playIntervalButton = document.getElementById('play-interval');
         const speedControl = document.getElementById('speed');
@@ -315,6 +315,46 @@
             return correct;
         }
     });
+</script>
+<script>
+
+function playSound(note) {
+    const notesAudio = {
+        'F3': 'assets/sounds/F3.mp3',
+        'F#3': 'assets/sounds/Fsharp3.mp3',
+        'G3': 'assets/sounds/G3.mp3',
+        'G#3': 'assets/sounds/Gsharp3.mp3',
+        'A3': 'assets/sounds/A3.mp3',
+        'A#3': 'assets/sounds/Asharp3.mp3',
+        'B3': 'assets/sounds/B3.mp3',
+        'C4': 'assets/sounds/C4.mp3',
+        'C#4': 'assets/sounds/Csharp4.mp3',
+        'D4': 'assets/sounds/D4.mp3',
+        'D#4': 'assets/sounds/Dsharp4.mp3',
+        'E4': 'assets/sounds/E4.mp3',
+        'F4': 'assets/sounds/F4.mp3',
+        'F#4': 'assets/sounds/Fsharp4.mp3',
+        'G4': 'assets/sounds/G4.mp3',
+        'G#4': 'assets/sounds/Gsharp4.mp3',
+        'A4': 'assets/sounds/A4.mp3',
+        'A#4': 'assets/sounds/Asharp4.mp3',
+        'B4': 'assets/sounds/B4.mp3',
+        'C5': 'assets/sounds/C5.mp3',
+        'C#5': 'assets/sounds/Csharp5.mp3',
+        'D5': 'assets/sounds/D5.mp3',
+        'D#5': 'assets/sounds/Dsharp5.mp3',
+        'E5': 'assets/sounds/E5.mp3',
+        'F5': 'assets/sounds/F5.mp3',
+        'F#5': 'assets/sounds/Fsharp5.mp3',
+        'G5': 'assets/sounds/G5.mp3',
+        'G#5': 'assets/sounds/Gsharp5.mp3',
+        'A5': 'assets/sounds/A5.mp3'
+    };
+
+    const audio = new Audio(notesAudio[note]);
+    audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
+}
+
 </script>
 <script>
 
