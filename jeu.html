@@ -101,6 +101,20 @@
         }
     </style>
 </head>
+    <script>
+function playSound(note) {
+    const notesAudio = {
+        'F3': '/assets/sounds/F3.mp3',
+        'F#3': '/assets/sounds/Fsharp3.mp3',
+        'G3': '/assets/sounds/G3.mp3'
+        // Ajoutez d'autres notes au besoin
+    };
+    const audio = new Audio(notesAudio[note]);
+    audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
+}
+</script>
+</body>
+
 <body>
 <div class="container">
     <h1>Jeu de Reconnaissance d'Intervalles Musicaux 🎵</h1>
