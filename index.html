@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Présentation et Réglages</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Présentation et Réglages</title>
+<style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
@@ -102,41 +103,40 @@
 </head>
 <body>
 <div class="container">
-    <h1>Bienvenue dans le Jeu des Intervalles Musicaux ! 🎵</h1>
-    <p>Prêt à devenir un pro de la reconnaissance d'intervalles ? C'est parti !</p>
-    <p>Choisis ton mode de jeu et c'est parti pour l'aventure musicale !</p>
-    <div id="settings-container">
-        <h2>Choisis ton mode de jeu</h2>
-        <div class="mode-selection">
-            <div class="mode-card" data-mode="custom">
-                <h3>Mode À La Carte 🍕</h3>
-                <p class="mode-description">Tu veux choisir tes intervalles préférés ? Ce mode est fait pour toi ! C'est comme composer ta propre pizza musicale. 🍕🎶</p>
-            </div>
-            <div class="mode-card" data-mode="progressive">
-                <h3>Mode Aventure 🌟</h3>
-                <p class="mode-description">Prêt pour un défi ? Commence facile et monte en difficulté. C'est comme un jeu vidéo, mais en mieux parce que tu deviens un super héros de la musique ! 🎮🎵</p>
-            </div>
-        </div>
-        <div id="interval-selection" style="display: none;">
-            <h2>Choisis tes intervalles</h2>
-            <div class="interval-grid" id="interval-options">
-                <div class="interval-card" data-interval="m2">Seconde mineure</div>
-                <div class="interval-card" data-interval="M2">Seconde majeure</div>
-                <div class="interval-card" data-interval="m3">Tierce mineure</div>
-                <div class="interval-card" data-interval="M3">Tierce majeure</div>
-                <div class="interval-card" data-interval="P4">Quarte juste</div>
-                <div class="interval-card" data-interval="P5">Quinte juste</div>
-                <div class="interval-card" data-interval="m6">Sixte mineure</div>
-                <div class="interval-card" data-interval="M6">Sixte majeure</div>
-                <div class="interval-card" data-interval="m7">Septième mineure</div>
-                <div class="interval-card" data-interval="M7">Septième majeure</div>
-                <div class="interval-card" data-interval="P8">Octave juste</div>
-            </div>
-        </div>
-        <button id="start-game">C'est parti ! 🚀</button>
-    </div>
+<h1>Bienvenue dans le Jeu des Intervalles Musicaux ! 🎵</h1>
+<p>Prêt à devenir un pro de la reconnaissance d'intervalles ? C'est parti !</p>
+<p>Choisis ton mode de jeu et c'est parti pour l'aventure musicale !</p>
+<div id="settings-container">
+<h2>Choisis ton mode de jeu</h2>
+<div class="mode-selection">
+<div class="mode-card" data-mode="custom">
+<h3>Mode À La Carte 🍕</h3>
+<p class="mode-description">Tu veux choisir tes intervalles préférés ? Ce mode est fait pour toi ! C'est comme composer ta propre pizza musicale. 🍕🎶</p>
 </div>
-
+<div class="mode-card" data-mode="progressive">
+<h3>Mode Aventure 🌟</h3>
+<p class="mode-description">Prêt pour un défi ? Commence facile et monte en difficulté. C'est comme un jeu vidéo, mais en mieux parce que tu deviens un super héros de la musique ! 🎮🎵</p>
+</div>
+</div>
+<div id="interval-selection" style="display: none;">
+<h2>Choisis tes intervalles</h2>
+<div class="interval-grid" id="interval-options">
+<div class="interval-card" data-interval="m2">Seconde mineure</div>
+<div class="interval-card" data-interval="M2">Seconde majeure</div>
+<div class="interval-card" data-interval="m3">Tierce mineure</div>
+<div class="interval-card" data-interval="M3">Tierce majeure</div>
+<div class="interval-card" data-interval="P4">Quarte juste</div>
+<div class="interval-card" data-interval="P5">Quinte juste</div>
+<div class="interval-card" data-interval="m6">Sixte mineure</div>
+<div class="interval-card" data-interval="M6">Sixte majeure</div>
+<div class="interval-card" data-interval="m7">Septième mineure</div>
+<div class="interval-card" data-interval="M7">Septième majeure</div>
+<div class="interval-card" data-interval="P8">Octave juste</div>
+</div>
+</div>
+<button id="start-game">C'est parti ! 🚀</button>
+</div>
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const modeCards = document.querySelectorAll('.mode-card');
@@ -173,10 +173,10 @@
         startGameButton.addEventListener('click', function() {
             if (selectedMode === 'custom') {
                 const selectedIntervals = Array.from(document.querySelectorAll('.interval-card.selected')).map(card => card.getAttribute('data-interval'));
-                if (selectedIntervals.length > 0) {
+                if (selectedIntervals.length >= 2) {
                     window.location.href = `jeu.html?intervals=${encodeURIComponent(selectedIntervals.join(','))}`;
                 } else {
-                    alert('Veuillez sélectionner au moins un intervalle pour le Mode Jeu.');
+                    alert('Veuillez sélectionner au moins deux intervalles pour le Mode Jeu.');
                 }
             } else {
                 window.location.href = 'aventure.html';
