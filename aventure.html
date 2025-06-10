@@ -183,12 +183,15 @@
             const startNote = lastInterval ? lastInterval[0] : getRandomNote();
             const notes = ["F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5"];
             const startIndex = notes.indexOf(startNote);
-            const octave = parseInt(startNote.substring(startNote.length - 1));
 
             let endNote;
             const semitones = getSemitonesForInterval(interval);
-            const endIndex = (startIndex + semitones) % notes.length;
-            endNote = notes[endIndex];
+            const endIndex = startIndex + semitones;
+            if (endIndex < notes.length) {
+                endNote = notes[endIndex];
+            } else {
+                endNote = notes[notes.length - 1];
+            }
 
             return [startNote, endNote];
         }
@@ -239,6 +242,17 @@
             }
         }
 
+        function playInterval(note1, note2) {
+            const delay = 1100 - parseInt(speedControl.value);
+            playSound(note1);
+            setTimeout(() => {
+                playSound(note2);
+                setTimeout(() => {
+                    playIntervalButton.disabled = false;
+                }, delay);
+            }, delay);
+        }
+
         playIntervalButton.addEventListener('click', () => {
             playIntervalButton.disabled = true;
 
@@ -277,17 +291,6 @@
             buttons.forEach(button => {
                 button.disabled = true;
             });
-        }
-
-        function playInterval(note1, note2) {
-            const delay = 1100 - parseInt(speedControl.value);
-            playSound(note1);
-            setTimeout(() => {
-                playSound(note2);
-                setTimeout(() => {
-                    playIntervalButton.disabled = false;
-                }, delay);
-            }, delay);
         }
 
         function checkAnswer(selectedInterval, correctInterval) {
