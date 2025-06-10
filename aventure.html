@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Aventure Musicale</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mode Aventure</title>
+<style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
@@ -21,6 +22,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             text-align: center;
+        }
+        h1 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        #game-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
         }
         button {
             background-color: #3498db;
@@ -40,49 +51,101 @@
             background-color: #bdc3c7;
             cursor: not-allowed;
         }
+        #interval-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
         #feedback {
             font-size: 1.5em;
             margin: 20px 0;
             text-align: center;
             color: #e74c3c;
         }
+        #score {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .feedback-symbol {
+            font-size: 4em;
+            margin: 20px;
+            display: none;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .speed-control {
+            margin: 20px 0;
+        }
+        .level-bars-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            height: 200px;
+            align-items: flex-end;
+        }
+        .level-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+            height: 100%;
+        }
+        .level-bar {
+            width: 30px;
+            height: 0%;
+            border-radius: 5px;
+            transition: height 0.3s;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .level-label {
+            margin-top: 5px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Aventure Musicale</h1>
-        <div id="feedback"></div>
-        <button id="playButton" onclick="playAdventure()">Commencer l'aventure</button>
-    </div>
+<div class="container">
+<h1>Mode Aventure 🎵</h1>
+<button id="return-to-index">Retour à l'accueil</button>
+<div id="game-container">
+<div class="speed-control">
+<label for="speed">Vitesse : </label>
+<input id="speed" max="1000" min="100" step="100" type="range" value="500"/>
+</div>
+<button id="play-interval">Jouer l'intervalle</button>
+<div id="interval-options"></div>
+<div id="feedback"></div>
+<div class="feedback-symbol" id="feedback-symbol"></div>
+<div id="score">Score: <span id="score-value">0</span>/10</div>
+</div>
+<div class="level-bars-container" id="level-bars-container">
+<!-- Les barres de niveau seront ajoutées ici dynamiquement -->
+</div>
+</div>
+<script>
+function playSound(note) {
+    const notesAudio = {
+        'F3': '/assets/sounds/F3.mp3',
+        'F#3': '/assets/sounds/Fsharp3.mp3',
+        'G3': '/assets/sounds/G3.mp3'
+        // Ajoutez d'autres notes au besoin
+    };
 
-    <script>
-        const notesAudio = {
-            'F3': '/assets/sounds/F3.mp3',
-            'Fsharp3': '/assets/sounds/Fsharp3.mp3',
-            'G3': '/assets/sounds/G3.mp3'
-            // Ajoutez d'autres notes au besoin
-        };
-
-        function playSound(note) {
-            const audio = new Audio(notesAudio[note]);
-            audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
-        }
-
-        function playAdventure() {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = "L'aventure commence !";
-
-            // Exemple de séquence de notes pour l'aventure
-            const sequence = ['F3', 'Fsharp3', 'G3'];
-            let delay = 0;
-
-            sequence.forEach(note => {
-                setTimeout(() => {
-                    playSound(note);
-                }, delay);
-                delay += 1000; // Délai d'une seconde entre chaque note
-            });
-        }
-    </script>
+    // Vérifiez si la note existe dans l'objet notesAudio
+    if (notesAudio[note]) {
+        const audio = new Audio(notesAudio[note]);
+        audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
+    } else {
+        console.error("La note spécifiée n'existe pas:", note);
+    }
+}
+</script>
 </body>
 </html>
