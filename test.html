@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <title>Test de son</title>
+</head>
+<body>
+    <button onclick="playSound('C3')">Jouer C3</button>
+
+    <script>
+        function playSound(note) {
+            const notesAudio = {
+                'C3': 'assets/sounds/C3.mp3',
+                'C#3': 'assets/sounds/Csharp3.mp3',
+                // Ajoutez d'autres notes au besoin
+            };
+
+            const audio = new Audio(notesAudio[note]);
+            audio.addEventListener('canplaythrough', () => {
+                audio.play().catch(e => console.error("Erreur lors de la lecture du son:", e));
+            });
+            audio.addEventListener('error', (e) => {
+                console.error("Erreur de chargement du son:", e);
+            });
+            audio.load();
+        }
+    </script>
+</body>
+</html>
