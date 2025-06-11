@@ -124,11 +124,9 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const intervalsParam = urlParams.get('intervals');
 
-        // Utiliser les intervalles de l'URL ou un ensemble par défaut
         let selectedIntervals = intervalsParam ? intervalsParam.split(',') : ['m2', 'M2', 'm3', 'M3', 'P4', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'];
 
         console.log('Selected intervals:', selectedIntervals);
@@ -187,11 +185,16 @@
 
             let endNote;
             const semitones = intervalTypes[interval];
-            const endIndex = startIndex + semitones;
-            if (endIndex < notes.length) {
-                endNote = notes[endIndex];
-            } else {
-                endNote = notes[notes.length - 1];
+            let endIndex = startIndex + semitones;
+
+            if (endIndex >= notes.length) {
+                return getIntervalNotes(interval);
+            }
+
+            endNote = notes[endIndex];
+
+            if (startNote === endNote) {
+                return getIntervalNotes(interval);
             }
 
             return [startNote, endNote];
