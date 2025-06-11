@@ -184,13 +184,17 @@
             const notes = ["F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5"];
             const startIndex = notes.indexOf(startNote);
 
-            let endNote;
             const semitones = getSemitonesForInterval(interval);
-            const endIndex = startIndex + semitones;
-            if (endIndex < notes.length) {
-                endNote = notes[endIndex];
-            } else {
-                endNote = notes[notes.length - 1];
+            let endIndex = startIndex + semitones;
+
+            if (endIndex >= notes.length) {
+                return getIntervalNotes(interval);
+            }
+
+            const endNote = notes[endIndex];
+
+            if (startNote === endNote) {
+                return getIntervalNotes(interval);
             }
 
             return [startNote, endNote];
@@ -283,7 +287,7 @@
                 intervalsPlayed++;
             }
 
-            lastInterval = null; // Reset the last interval when changing levels
+            lastInterval = [note1, note2, randomInterval];
         });
 
         function disableAnswerButtons(container) {
