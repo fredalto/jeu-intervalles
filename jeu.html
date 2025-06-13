@@ -99,6 +99,12 @@
             font-weight: bold;
             margin: 20px 0;
         }
+        input, select {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -122,6 +128,7 @@
     <div id="final-score"></div>
     <div id="end-game-options"></div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -314,6 +321,71 @@
 
             endGameOptions.innerHTML = '';
 
+            const returnHomeButton = document.createElement('button');
+            returnHomeButton.textContent = "Retour à l'accueil";
+            returnHomeButton.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+
+            const sendScoreButton = document.createElement('button');
+            sendScoreButton.id = 'send-score-button';
+            sendScoreButton.textContent = "Envoyer le score";
+            sendScoreButton.addEventListener('click', function() {
+                const scoreForm = document.createElement('div');
+                scoreForm.innerHTML = `
+                    <input type="text" id="first-name" placeholder="Prénom" required>
+                    <input type="text" id="last-name" placeholder="Nom" required>
+                    <select id="professor" required>
+                        <option value="">Sélectionnez un professeur</option>
+                        <option value="Sandrine LECAILLE">Sandrine LECAILLE</option>
+                        <option value="Benoit DANTIN">Benoit DANTIN</option>
+                        <option value="Frédéric MATTE">Frédéric MATTE</option>
+                    </select>
+                    <button id="submit-score">Soumettre</button>
+                `;
+                endGameOptions.appendChild(scoreForm);
+
+                document.getElementById('submit-score').addEventListener('click', function() {
+                    const firstName = document.getElementById('first-name').value;
+                    const lastName = document.getElementById('last-name').value;
+                    const professor = document.getElementById('professor').value;
+
+                    if (firstName && lastName && professor) {
+                        const date = new Date();
+                        const dateString = date.toISOString().split('T')[0];
+                        const timeString = date.toTimeString().split(' ')[0];
+
+                        // Formater les intervalles travaillés
+                        const intervalsWorked = selectedIntervals.map(interval => {
+                            const intervalAbbreviations = {
+                                m2: "2m",
+                                M2: "2M",
+                                m3: "3m",
+                                M3: "3M",
+                                P4: "4",
+                                P5: "5",
+                                m6: "6m",
+                                M6: "6M",
+                                m7: "7m",
+                                M7: "7M",
+                                P8: "8"
+                            };
+                            return intervalAbbreviations[interval];
+                        }).join(', ');
+
+                        sendDataToSheet(firstName, lastName, professor, dateString, timeString, intervalsWorked, score);
+
+                        scoreForm.style.display = 'none';
+                        document.getElementById('send-score-button').style.display = 'none';
+                    } else {
+                        alert('Veuillez remplir tous les champs.');
+                    }
+                });
+            });
+
+            endGameOptions.appendChild(returnHomeButton);
+            endGameOptions.appendChild(sendScoreButton);
+
             if (score < 17) {
                 const retryButton = document.createElement('button');
                 retryButton.textContent = "Réessayer";
@@ -351,6 +423,36 @@
                     endGameOptions.appendChild(adventureButton);
                 }
             }
+        }
+
+        function sendDataToSheet(firstName, lastName, professor, date, time, intervalsWorked, score) {
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbz7oKKBOiEMHl5cUMXGLtlJXuIls7Hx3I92KRSGzYtOziVMiAWwuBzqfSHnu1JWM9khAQ/exec';
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    professor: professor,
+                    date: date,
+                    time: time,
+                    gameType: intervalsWorked,
+                    score: score
+                })
+            })
+            .then(response => {
+                console.log('Success:', response);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Erreur lors de l\'envoi du score.');
+            });
+
+            alert('Score envoyé avec succès!');
         }
     });
 
